@@ -1,7 +1,6 @@
 name: Validate and Deploy Portfolio
 
-# cada que el archivo haya un  cambio en la rama main
-on: 
+on:
   push:
     branches:
       - main
@@ -11,28 +10,36 @@ permissions:
   pages: write
   id-token: write
 
-
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Install HTMLHint   # archivos validadores de HTML
+      - name: Install HTMLHint
         run: npm install -g htmlhint
 
-      - name: Validate HTML
-        run: htmlhint "/*.html"
+      - name: Validate HTML files
+        run: htmlhint "**/*.html"
 
-deploy:
-  needs: validate
-  runs-on: ubuntu-latest
-  environment:
-    name: github-pages
-  steps:
-    - uses: actions/checkout@v4
-    - uses: actions/configure-pages@v5
-    - uses: actions/upload-pages-artifact@v3
-      with:
-        path: .
-    - uses: actions/deploy-pages@v4
+  deploy:
+    needs: validate
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload site files
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
+
